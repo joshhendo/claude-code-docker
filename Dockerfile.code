@@ -23,8 +23,8 @@ RUN useradd -m coder
 COPY --chown=coder:coder ./docker/init.sh /home/coder/init.sh
 RUN chmod +x /home/coder/init.sh
 
-COPY --chown=coder:coder ./claude/claude.defaults.json /home/coder/claude.defaults.json
-COPY --chown=coder:coder ./claude/settings.defaults.json /home/coder/settings.defaults.json
+# COPY --chown=coder:coder ./claude/claude.defaults.json /home/coder/claude.defaults.json
+# COPY --chown=coder:coder ./claude/settings.defaults.json /home/coder/settings.defaults.json
 
 USER coder
 WORKDIR /home/coder
