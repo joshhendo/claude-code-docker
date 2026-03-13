@@ -1,0 +1,38 @@
+
+
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    image: claude-proxy:local
+    networks:
+      - claude-net
+      - proxy-external
+    restart: unless-stopped
+
+  code:
+    build:
+      context: .
+      dockerfile: Dockerfile.code
+    image: claude-code:local
+    depends_on:
+      - proxy
+    networks:
+      - claude-net
+    volumes:
+      - "${PROJECT_DIR:-${PWD}}:/project"
+      - "./claude/config:/home/coder/.claude"
+      - "./claude/claude.json:/home/coder/.claude.json"
+    environment:
+      - HTTP_PROXY=http://proxy:3128
+      - HTTPS_PROXY=http://proxy:3128
+      - NO_PROXY=localhost,127.0.0.1
+    stdin_open: true
+    tty: true
+
+networks:
+  claude-net:
+    internal: true
+
+  proxy-external: {}
