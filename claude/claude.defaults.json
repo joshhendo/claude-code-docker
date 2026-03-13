@@ -4,6 +4,8 @@
       "hasTrustDialogAccepted": true
     }
   },
-  "mcpServers": {
+  "serena": {
+    "command": "/home/coder/.local/bin/serena",
+    "args": ["start-mcp-server", "--context", "ide-assistant", "--project", "/project"]
   }
 }
