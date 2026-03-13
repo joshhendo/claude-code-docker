@@ -4,8 +4,10 @@
       "hasTrustDialogAccepted": true
     }
   },
-  "serena": {
-    "command": "/home/coder/.local/bin/serena",
-    "args": ["start-mcp-server", "--context", "ide-assistant", "--project", "/project"]
+  "mcpServers": {
+    "serena": {
+      "command": "/home/coder/.local/bin/serena",
+      "args": ["start-mcp-server", "--context", "ide-assistant", "--project", "/project"]
+    }
   }
 }

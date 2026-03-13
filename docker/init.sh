@@ -13,6 +13,11 @@ if [ ! -f /home/coder/.claude.json ]; then
   chown coder:coder /home/coder/.claude.json
 fi
 
+if [ ! -f /home/coder/.claude/settings.json ]; then
+  cp /home/coder/settings.defaults.json /home/coder/.claude/settings.json
+  chown coder:coder /home/coder/.claude/settings.json
+fi
+
 # Check for available authentication:
 #   - ANTHROPIC_API_KEY env var, or
 #   - an existing OAuth session stored in ~/.claude.json
