@@ -33,6 +33,32 @@ After reloading the configuration (e.g. running `source ~/.zshrc` or restarting 
 
 The script will mount the current directory in the image at `/project` and run Claude Code within that directory.
 
+## Authentication
+
+On first run, if no authentication is found, you will be prompted to log in. Claude will print a URL — open it in your browser, complete the sign-in, and paste the resulting code back into the terminal.
+
+Authentication is persisted in `claude/config/` so subsequent runs will not require re-authentication.
+
+## Reference Directories
+
+You can give Claude read-only access to directories outside the current project using `--add-dir`:
+
+```
+claude --add-dir /home/josh/projects/other-repo
+```
+
+This mounts the directory at `/refs/other-repo` inside the container (using the directory's basename by default). You can specify a custom name with a colon:
+
+```
+claude --add-dir /home/josh/projects/other-repo:other
+```
+
+This mounts it at `/refs/other` instead. If two `--add-dir` arguments resolve to the same name, the script will exit with an error.
+
+## Configuration
+
+Default settings are stored in `claude/claude.defaults.json` and `claude/settings.defaults.json`. These are baked into the Docker image and copied to `claude/claude.json` and `claude/config/settings.json` on first run. The `claude/claude.json` and `claude/config/` files are gitignored so personal configuration and credentials are never committed.
+
 ## Warnings
 
 This isn't 100% foolproof. For it to function, some internet requests must be allowed, so it's not completely isolated from the internet. In addition, whilst the isolation should prevent Claude Code from being able to execute commands on the host, it won't stop Claude from inserting something malcious into the project which may, in turn, get executed on the host machine or another environment.

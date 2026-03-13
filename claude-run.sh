@@ -44,6 +44,51 @@ if ! docker inspect --format '{{.State.Running}}' "${PROXY_CONTAINER}" 2>/dev/nu
 fi
 
 
+# Parse --add-dir arguments, mounting each host path under /refs in the container
+# and rewriting the arg to use the container path.
+#
+# Syntax: --add-dir /host/path[:ref_name]
+#   /host/path        — mounted at /refs/<basename of path>
+#   /host/path:name   — mounted at /refs/name
+#
+# Duplicate ref names are treated as an error.
+ADD_DIR_VOLUMES=()
+ADD_DIR_NAMES=()
+CLAUDE_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --add-dir|--add-dir=*)
+      if [[ "$1" == "--add-dir" ]]; then
+        RAW="$2"; shift 2
+      else
+        RAW="${1#--add-dir=}"; shift
+      fi
+      # Split on colon into host path and optional ref name
+      HOST_PATH="${RAW%%:*}"
+      if [[ "$RAW" == *:* ]]; then
+        REF_NAME="${RAW#*:}"
+      else
+        REF_NAME="$(basename "${HOST_PATH}")"
+      fi
+      # Check for duplicate ref names
+      for existing in "${ADD_DIR_NAMES[@]}"; do
+        if [[ "$existing" == "$REF_NAME" ]]; then
+          echo "error: duplicate --add-dir ref name '${REF_NAME}'" >&2
+          exit 1
+        fi
+      done
+      ADD_DIR_NAMES+=("${REF_NAME}")
+      CONTAINER_PATH="/refs/${REF_NAME}"
+      ADD_DIR_VOLUMES+=("--volume" "${HOST_PATH}:${CONTAINER_PATH}:ro")
+      CLAUDE_ARGS+=("--add-dir" "${CONTAINER_PATH}")
+      ;;
+    *)
+      CLAUDE_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
 echo "Starting Claude Code in: ${BASE_DIR}"
 
 docker run \
@@ -54,6 +99,7 @@ docker run \
   --volume "${BASE_DIR}:/project" \
   --volume "${CLAUDE_CONFIG_DIR}:/home/coder/.claude" \
   --volume "${CLAUDE_CONFIG_FILE}:/home/coder/.claude.json" \
+  "${ADD_DIR_VOLUMES[@]}" \
   --env HTTPS_PROXY="http://${PROXY_CONTAINER}:3128" \
   --env NO_PROXY="localhost,127.0.0.1" \
-  "${CODE_IMAGE}" "$@"
+  "${CODE_IMAGE}" "${CLAUDE_ARGS[@]}"
