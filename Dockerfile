@@ -1,0 +1,24 @@
+FROM debian:bookworm-slim
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+	ca-certificates \
+	gosu \
+	curl
+
+RUN useradd -m coder
+
+COPY --chown=coder:coder ./docker/init.sh /home/coder/init.sh
+RUN chmod +x /home/coder/init.sh
+
+USER coder
+WORKDIR /home/coder
+
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+ENV PATH="/home/coder/.claude/bin:/home/coder/.local/bin:${PATH}"
+
+WORKDIR /project
+USER root
+
+ENTRYPOINT ["sh", "/home/coder/init.sh"]
