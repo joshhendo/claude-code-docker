@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "/project": {
+      "hasTrustDialogAccepted": true
+    }
+  },
+  "mcpServers": {
+  }
+}

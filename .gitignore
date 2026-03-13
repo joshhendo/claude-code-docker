@@ -1,1 +1,9 @@
 .DS_Store
+.idea/
+
+# Auth credentials and personal config — never commit these
+claude/claude.json
+claude/config/
+
+# Runtime-generated merge file
+claude/claude.merged.json
