@@ -1,5 +1,6 @@
 .DS_Store
 .idea/
+.serena/
 
 # Auth credentials and personal config — never commit these
 claude/

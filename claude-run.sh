@@ -15,6 +15,8 @@ CLAUDE_CONFIG_FILE="${SCRIPT_DIR}/claude/claude.json"
 CLAUDE_DEFAULTS_FILE="${SCRIPT_DIR}/defaults/claude.defaults.json"
 CLAUDE_SETTINGS_FILE="${CLAUDE_CONFIG_DIR}/settings.json"
 CLAUDE_SETTINGS_DEFAULTS_FILE="${SCRIPT_DIR}/defaults/settings.defaults.json"
+CLAUDE_MD_FILE="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
+CLAUDE_MD_DEFAULTS_FILE="${SCRIPT_DIR}/defaults/CLAUDE.md"
 
 # Ensure host-side mounts exist as the correct types before Docker touches them.
 # Docker auto-creates a *directory* for any missing bind-mount path, which breaks file mounts.
@@ -24,6 +26,9 @@ if [ ! -f "${CLAUDE_CONFIG_FILE}" ]; then
 fi
 if [ ! -f "${CLAUDE_SETTINGS_FILE}" ]; then
   cp "${CLAUDE_SETTINGS_DEFAULTS_FILE}" "${CLAUDE_SETTINGS_FILE}"
+fi
+if [ ! -f "${CLAUDE_MD_FILE}" ]; then
+  cp "${CLAUDE_MD_DEFAULTS_FILE}" "${CLAUDE_MD_FILE}"
 fi
 
 if ! docker network inspect "${NETWORK}" &>/dev/null; then
