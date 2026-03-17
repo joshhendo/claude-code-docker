@@ -117,11 +117,9 @@ docker run \
   --rm \
   --interactive \
   --tty \
-  --network "${NETWORK}" \
   --volume "${BASE_DIR}:/project" \
   --volume "${CLAUDE_CONFIG_DIR}:/home/coder/.claude" \
   --volume "${CLAUDE_CONFIG_FILE}:/home/coder/.claude.json" \
   "${ADD_DIR_VOLUMES[@]}" \
   "${ENV_ARGS[@]}" \
-  --env NO_PROXY="localhost,127.0.0.1" \
   "${CODE_IMAGE}" "${CLAUDE_ARGS[@]}"
