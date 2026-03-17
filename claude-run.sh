@@ -17,6 +17,7 @@ CLAUDE_SETTINGS_FILE="${CLAUDE_CONFIG_DIR}/settings.json"
 CLAUDE_SETTINGS_DEFAULTS_FILE="${SCRIPT_DIR}/defaults/settings.defaults.json"
 CLAUDE_MD_FILE="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
 CLAUDE_MD_DEFAULTS_FILE="${SCRIPT_DIR}/defaults/CLAUDE.md"
+ENV_DIR="${SCRIPT_DIR}/claude/envs"
 
 # Ensure host-side mounts exist as the correct types before Docker touches them.
 # Docker auto-creates a *directory* for any missing bind-mount path, which breaks file mounts.
@@ -94,6 +95,22 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+ENV_ARGS=()
+# Check if the directory exists
+if [ -d "$ENV_DIR" ]; then
+    # Iterate through every file in the directory
+    for env_file in "$ENV_DIR"/*; do
+        # Ensure it's a file (not a subfolder)
+        if [ -f "$env_file" ]; then
+            ENV_ARGS+=("--env-file" "$env_file")
+            echo "Loaded environment file: $env_file"
+        fi
+    done
+else
+    echo "Warning: $ENV_DIR directory not found. Proceeding without extra env files."
+fi
+
+
 echo "Starting Claude Code in: ${BASE_DIR}"
 
 docker run \
@@ -105,6 +122,6 @@ docker run \
   --volume "${CLAUDE_CONFIG_DIR}:/home/coder/.claude" \
   --volume "${CLAUDE_CONFIG_FILE}:/home/coder/.claude.json" \
   "${ADD_DIR_VOLUMES[@]}" \
-  --env HTTPS_PROXY="http://${PROXY_CONTAINER}:3128" \
+  "${ENV_ARGS[@]}" \
   --env NO_PROXY="localhost,127.0.0.1" \
   "${CODE_IMAGE}" "${CLAUDE_ARGS[@]}"

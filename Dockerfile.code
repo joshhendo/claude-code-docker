@@ -9,7 +9,8 @@ RUN apt-get install -y --no-install-recommends \
 	python3 \
 	python3-pip \
 	nodejs \
-	npm
+	npm \
+	unzip
 
 # Install uv (Python package manager required by Serena)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
@@ -17,6 +18,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && mv /root/.local/bin/uvx /usr/local/bin/
 
 RUN npm install -g typescript typescript-language-server
+RUN npm install -g claudish
 
 RUN useradd -m coder
 
@@ -30,6 +32,7 @@ USER coder
 WORKDIR /home/coder
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
+RUN curl -fsSL https://bun.sh/install | bash
 
 ENV PATH="/home/coder/.claude/bin:/home/coder/.local/bin:${PATH}"
 
@@ -41,6 +44,11 @@ RUN mkdir -p /home/coder/.serena/language_servers/static/TypeScriptLanguageServe
     && cd /home/coder/.serena/language_servers/static/TypeScriptLanguageServer/ts-lsp \
     && npm init -y \
     && npm install typescript typescript-language-server
+
+RUN mkdir -p /home/coder/.serena/language_servers/static/BashLanguageServer \
+    && cd /home/coder/.serena/language_servers/static/BashLanguageServer \
+    && npm init -y \
+    && npm install --prefix ./ bash-language-server@5.6.0
 
 WORKDIR /project
 USER root
