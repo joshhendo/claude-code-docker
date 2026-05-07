@@ -31,4 +31,6 @@ if ! is_authenticated; then
   printf "No authentication found — you will be prompted to log in.\n"
 fi
 
+gosu coder git config --global --add safe.directory /project
+
 exec gosu coder env claude --dangerously-skip-permissions "$@"

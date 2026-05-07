@@ -8,6 +8,10 @@
     "serena": {
       "command": "/home/coder/.local/bin/serena",
       "args": ["start-mcp-server", "--context", "ide-assistant", "--project", "/project"]
+    },
+    "sequential-thinking": {
+      "command": "mcp-server-sequential-thinking",
+      "args": []
     }
   }
 }

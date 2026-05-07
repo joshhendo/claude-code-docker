@@ -103,21 +103,21 @@ if [ -d "$ENV_DIR" ]; then
         # Ensure it's a file (not a subfolder)
         if [ -f "$env_file" ]; then
             ENV_ARGS+=("--env-file" "$env_file")
-            echo "Loaded environment file: $env_file"
         fi
     done
 else
     echo "Warning: $ENV_DIR directory not found. Proceeding without extra env files."
 fi
 
-
-echo "Starting Claude Code in: ${BASE_DIR}"
-
 docker run \
-  --rm \
   --interactive \
+  --rm \
   --tty \
   --volume "${BASE_DIR}:/project" \
+  -e "HOST_WORKSPACE=${BASE_DIR}" \
+  -e "CONTAINER_WORKDIR=/project" \
+  --network host \
+  --workdir /project \
   --volume "${CLAUDE_CONFIG_DIR}:/home/coder/.claude" \
   --volume "${CLAUDE_CONFIG_FILE}:/home/coder/.claude.json" \
   "${ADD_DIR_VOLUMES[@]}" \
